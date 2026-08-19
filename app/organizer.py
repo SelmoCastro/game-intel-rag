@@ -39,6 +39,34 @@ class OrganizerAgent:
 
         return self._fallback(document)
 
+    def organize_many(self, document: GameDocument, max_chars: int = 900) -> list[OrganizedDocument]:
+        """Divide uma fonte longa em chunks preservando linhas/seções."""
+        lines = [line.strip() for line in document.content.splitlines() if line.strip()]
+        chunks: list[str] = []
+        current: list[str] = []
+        size = 0
+        for line in lines:
+            if current and size + len(line) + 1 > max_chars:
+                chunks.append("\n".join(current))
+                current, size = [], 0
+            current.append(line)
+            size += len(line) + 1
+        if current:
+            chunks.append("\n".join(current))
+        if not chunks:
+            return [self.organize(document)]
+        if len(chunks) == 1:
+            return [self.organize(document)]
+
+        organized: list[OrganizedDocument] = []
+        for index, chunk in enumerate(chunks, start=1):
+            chunk_document = document.model_copy(update={
+                "title": f"{document.title} — seção {index}",
+                "content": chunk,
+            })
+            organized.append(self.organize(chunk_document))
+        return organized
+
     @staticmethod
     def _fallback(document: GameDocument) -> OrganizedDocument:
         text = re.sub(r"\s+", " ", document.content).strip()

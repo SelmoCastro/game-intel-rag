@@ -35,5 +35,5 @@ def test_season_category_is_detected():
 
 def test_html_is_cleaned():
     result = _clean_text("<script>bad()</script><h1>Patch notes</h1><p>Act 9</p>")
-    assert result == "Patch notes Act 9"
+    assert result == "Patch notes\nAct 9"
     assert "bad" not in result

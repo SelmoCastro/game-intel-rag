@@ -19,7 +19,12 @@ def _clean_text(html: str) -> str:
     soup = BeautifulSoup(html, "html.parser")
     for element in soup(["script", "style", "noscript", "iframe"]):
         element.decompose()
-    return " ".join(soup.get_text(" ").split())
+    lines = []
+    for line in soup.get_text("\n").splitlines():
+        line = " ".join(line.split())
+        if line and line not in lines:
+            lines.append(line)
+    return "\n".join(lines)
 
 
 def _category_from_text(text: str) -> DocumentCategory:

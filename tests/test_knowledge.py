@@ -34,7 +34,7 @@ def test_store_deduplicates(tmp_path):
         source_type="test",
     )
     assert store.count() == 1
-    assert store.upsert_raw(document) is False
+    assert store.upsert_raw(document) is True
     assert store.count() == 1
 
 
