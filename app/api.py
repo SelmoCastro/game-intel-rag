@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from app.answer import AnswerAgent
 from app.llm import OpenRouterLLM
 from app.retriever import RetrievalService
-from app.store import KnowledgeStore
+from app.store_factory import create_store
 
 app = FastAPI(title="Game Intel RAG", version="0.1.0")
 
@@ -21,7 +21,7 @@ class AskRequest(BaseModel):
 
 @lru_cache
 def get_agent() -> AnswerAgent:
-    store = KnowledgeStore(Path("data/game_intel.sqlite3"))
+    store = create_store(Path("data/game_intel.sqlite3"))
     llm = OpenRouterLLM() if os.getenv("OPENROUTER_API_KEY") else None
     return AnswerAgent(RetrievalService(store), llm=llm)
 

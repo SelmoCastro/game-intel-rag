@@ -2,7 +2,7 @@ import os
 
 from app.answer import AnswerAgent
 from app.retriever import RetrievalService
-from app.store import KnowledgeStore
+from app.store_factory import create_store
 
 
 def create_bot():
@@ -12,7 +12,7 @@ def create_bot():
     intents = discord.Intents.default()
     client = discord.Client(intents=intents)
     tree = app_commands.CommandTree(client)
-    agent = AnswerAgent(RetrievalService(KnowledgeStore()))
+    agent = AnswerAgent(RetrievalService(create_store()))
 
     @client.event
     async def on_ready():

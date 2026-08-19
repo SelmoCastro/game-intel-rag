@@ -4,7 +4,7 @@ from pathlib import Path
 from app.answer import AnswerAgent
 from app.collectors import collect_steam_news
 from app.retriever import RetrievalService
-from app.store import KnowledgeStore
+from app.store_factory import create_store
 
 
 def main() -> None:
@@ -15,7 +15,7 @@ def main() -> None:
     ask.add_argument("question")
     args = parser.parse_args()
 
-    store = KnowledgeStore(Path("data/game_intel.sqlite3"))
+    store = create_store(Path("data/game_intel.sqlite3"))
     if args.command == "ingest":
         document = collect_steam_news()
         print(f"Documento novo: {store.upsert_raw(document)}")

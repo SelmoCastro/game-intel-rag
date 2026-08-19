@@ -8,7 +8,8 @@ Assistente de IA para coletar, organizar e consultar informações públicas de 
 - normalização em `GameDocument`;
 - deduplicação por hash;
 - agente organizador com fallback determinístico;
-- armazenamento local em SQLite;
+- armazenamento em PostgreSQL + pgvector;
+- fallback local em SQLite para testes;
 - busca filtrada por jogo e temporada;
 - agente de resposta com citações;
 - API FastAPI;
@@ -27,11 +28,14 @@ uv run python cli.py ingest
 uv run python cli.py ask "Quais novidades existem no Act 9?"
 ```
 
-Banco local:
+Banco usado na VPS:
 
 ```text
-data/game_intel.sqlite3
+PostgreSQL: game_intel
+Extensão: vector 0.8.6
 ```
+
+Sem `DATABASE_URL`, o projeto usa `data/game_intel.sqlite3` automaticamente.
 
 ## API
 
@@ -65,6 +69,16 @@ uv run python -m app.discord_bot
 
 O bot oferece o comando `/ask`. A integração atual fixa Hero Siege Season 10 de propósito; o próximo passo é permitir a seleção segura de jogo e temporada.
 
+## Configuração PostgreSQL
+
+O `.env` não é versionado. Para usar o banco da VPS:
+
+```env
+DATABASE_URL=postgresql://usuario:senha@127.0.0.1:5432/game_intel
+```
+
+O usuário deve ter permissão no banco `game_intel` e a extensão `vector` deve estar habilitada.
+
 ## Arquitetura atual
 
 ```text
@@ -76,7 +90,7 @@ GameDocument
    ↓
 OrganizerAgent (LLM opcional / fallback local)
    ↓
-SQLite KnowledgeStore
+PostgreSQLKnowledgeStore + pgvector
    ↓
 RetrievalService
    ↓

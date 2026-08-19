@@ -1,9 +1,14 @@
+from typing import Protocol
+
 from app.models import AnswerSource, OrganizedDocument
-from app.store import KnowledgeStore
+
+
+class KnowledgeStoreLike(Protocol):
+    def search(self, query: str, game: str | None = None, season: str | None = None, limit: int = 5) -> list[OrganizedDocument]: ...
 
 
 class RetrievalService:
-    def __init__(self, store: KnowledgeStore):
+    def __init__(self, store: KnowledgeStoreLike):
         self.store = store
 
     def retrieve(self, question: str, game: str | None = None, season: str | None = None, limit: int = 5) -> list[OrganizedDocument]:
