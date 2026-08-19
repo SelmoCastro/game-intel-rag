@@ -1,10 +1,12 @@
 from functools import lru_cache
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 from app.answer import AnswerAgent
+from app.llm import OpenRouterLLM
 from app.retriever import RetrievalService
 from app.store import KnowledgeStore
 
@@ -20,7 +22,8 @@ class AskRequest(BaseModel):
 @lru_cache
 def get_agent() -> AnswerAgent:
     store = KnowledgeStore(Path("data/game_intel.sqlite3"))
-    return AnswerAgent(RetrievalService(store))
+    llm = OpenRouterLLM() if os.getenv("OPENROUTER_API_KEY") else None
+    return AnswerAgent(RetrievalService(store), llm=llm)
 
 
 @app.get("/health")

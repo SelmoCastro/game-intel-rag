@@ -15,7 +15,7 @@ Assistente de IA para coletar, organizar e consultar informações públicas de 
 - adaptador de bot Discord com `/ask`;
 - testes automatizados.
 
-O fallback local permite rodar o projeto sem chave de API. O agente organizador aceita um cliente OpenRouter opcional via `OPENROUTER_API_KEY`.
+O fallback local permite rodar o projeto sem chave de API. O agente organizador e o agente de resposta aceitam um cliente OpenRouter opcional via `OPENROUTER_API_KEY`.
 
 ## Executar localmente
 

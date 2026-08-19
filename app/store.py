@@ -34,9 +34,9 @@ class KnowledgeStore:
                 )
             """)
 
-    def upsert_raw(self, document: GameDocument) -> bool:
+    def upsert_raw(self, document: GameDocument, organizer=None) -> bool:
         from app.organizer import OrganizerAgent
-        return self.upsert(OrganizerAgent().organize(document))
+        return self.upsert((organizer or OrganizerAgent()).organize(document))
 
     def upsert(self, document: OrganizedDocument) -> bool:
         with self._connect() as db:
