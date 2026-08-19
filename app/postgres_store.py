@@ -43,7 +43,14 @@ class PostgresKnowledgeStore:
 
     def upsert_raw(self, document: GameDocument, organizer=None) -> bool:
         from app.organizer import OrganizerAgent
-        return self.upsert((organizer or OrganizerAgent()).organize(document))
+        documents = (organizer or OrganizerAgent()).organize_many(document)
+        with self._connect() as db:
+            db.execute("DELETE FROM game_documents WHERE source_url = %s", (str(document.source_url),))
+            db.commit()
+        return self.upsert_many(documents) > 0
+
+    def upsert_many(self, documents: list[OrganizedDocument]) -> int:
+        return sum(self.upsert(document) for document in documents)
 
     def upsert(self, document: OrganizedDocument) -> bool:
         embedding = self.embeddings.as_pgvector(
