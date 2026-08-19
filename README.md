@@ -1,10 +1,10 @@
-# Hero Siege RAG Bot
+# Game Intel RAG
 
-Projeto de portfólio para coletar, organizar e consultar informações públicas de **Hero Siege**, começando pela Season 10 — Ebontharn.
+Projeto de portfólio para coletar, organizar e consultar informações públicas de jogos usando RAG. O primeiro jogo integrado é **Hero Siege**, começando pela Season 10 — Ebontharn.
 
 ## Objetivo
 
-Responder perguntas de jogadores usando RAG, sempre mostrando:
+Responder perguntas de jogadores de diferentes jogos usando RAG, sempre mostrando:
 
 - temporada e patch considerados;
 - fontes consultadas;

@@ -1,7 +1,7 @@
 [project]
-name = "hero-siege-rag-bot"
+name = "game-intel-rag"
 version = "0.1.0"
-description = "Pipeline inicial de coleta e organização de informações da Season 10 de Hero Siege"
+description = "Pipeline de coleta, organização e consulta de informações de jogos com RAG"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
