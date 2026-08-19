@@ -25,6 +25,7 @@ uv venv
 uv sync --extra dev
 uv run pytest
 uv run python cli.py ingest
+uv run python cli.py ingest-all
 uv run python cli.py ask "Quais novidades existem no Act 9?"
 ```
 
@@ -113,6 +114,9 @@ AnswerAgent
 ## Fontes atuais
 
 - [Hero Siege — Ebontharn and Season 10](https://store.steampowered.com/news/app/269210/view/461208205952813643)
+- [Hero Siege Wiki — White Mage](https://herosiege.wiki.gg/wiki/White_Mage)
+- [Graxy Guides — Hero Siege](https://www.graxyguides.com/herosiege)
+- [Metaroad — Hero Siege](https://metaroad.gg/hero-siege)
 
 ## Regra de coleta
 
