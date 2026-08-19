@@ -1,50 +1,104 @@
 # Game Intel RAG
 
-Projeto de portfólio para coletar, organizar e consultar informações públicas de jogos usando RAG. O primeiro jogo integrado é **Hero Siege**, começando pela Season 10 — Ebontharn.
+Assistente de IA para coletar, organizar e consultar informações públicas de vários jogos. O primeiro jogo integrado é **Hero Siege**, começando pela Season 10 — Ebontharn.
 
-## Objetivo
+## O que já funciona
 
-Responder perguntas de jogadores de diferentes jogos usando RAG, sempre mostrando:
+- coleta da notícia oficial pela RSS pública da Steam;
+- normalização em `GameDocument`;
+- deduplicação por hash;
+- agente organizador com fallback determinístico;
+- armazenamento local em SQLite;
+- busca filtrada por jogo e temporada;
+- agente de resposta com citações;
+- API FastAPI;
+- adaptador de bot Discord com `/ask`;
+- testes automatizados.
 
-- temporada e patch considerados;
-- fontes consultadas;
-- data da informação, quando disponível;
-- aviso quando não houver evidência recente suficiente.
+O fallback local permite rodar o projeto sem chave de API. O agente organizador aceita um cliente OpenRouter opcional via `OPENROUTER_API_KEY`.
 
-## Estado atual
-
-A primeira versão implementa o contrato `GameDocument` e um coletor da notícia oficial da Steam sobre a Season 10.
-
-Fonte inicial: [Hero Siege — Ebontharn and Season 10](https://store.steampowered.com/news/app/269210/view/461208205952813643)
-
-Ainda **não** existe bot, banco vetorial ou agente autônomo. Eles entrarão depois que a coleta e a normalização estiverem confiáveis.
-
-## Executar
+## Executar localmente
 
 ```bash
 uv venv
-uv pip install -e ".[dev]"
+uv sync --extra dev
 uv run pytest
-uv run python collect_season.py
+uv run python cli.py ingest
+uv run python cli.py ask "Quais novidades existem no Act 9?"
 ```
 
-O coletor salva o documento em:
+Banco local:
 
 ```text
-data/raw/hero-siege-season-10-steam.json
+data/game_intel.sqlite3
 ```
 
-## Roadmap
+## API
 
-- [x] Contrato normalizado para documentos
-- [x] Coletor da fonte oficial inicial
-- [x] Persistência local em JSON
-- [ ] Coletor de patch notes
-- [ ] PostgreSQL + pgvector
-- [ ] Busca híbrida por texto, temporada e categoria
-- [ ] RAG com citações
-- [ ] Bot no Discord
-- [ ] Avaliação com perguntas reais do grupo
+```bash
+uv run uvicorn app.api:app --reload
+```
+
+Healthcheck:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+Pergunta:
+
+```bash
+curl -X POST http://127.0.0.1:8000/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"Quais novidades existem no Act 9?","game":"Hero Siege","season":"Season 10"}'
+```
+
+## Discord
+
+Configure o token sem colocá-lo no Git:
+
+```bash
+cp .env.example .env
+# editar DISCORD_BOT_TOKEN
+uv run python -m app.discord_bot
+```
+
+O bot oferece o comando `/ask`. A integração atual fixa Hero Siege Season 10 de propósito; o próximo passo é permitir a seleção segura de jogo e temporada.
+
+## Arquitetura atual
+
+```text
+Steam RSS
+   ↓
+collector
+   ↓
+GameDocument
+   ↓
+OrganizerAgent (LLM opcional / fallback local)
+   ↓
+SQLite KnowledgeStore
+   ↓
+RetrievalService
+   ↓
+AnswerAgent
+   ├── CLI
+   ├── FastAPI
+   └── Discord
+```
+
+## Próximas etapas
+
+- separar coletores por jogo;
+- adicionar mais fontes públicas;
+- trocar recuperação lexical por embeddings + pgvector;
+- gerar respostas com LLM usando contexto recuperado;
+- adicionar avaliação com perguntas reais do grupo;
+- permitir múltiplos jogos no Discord;
+- orquestrar o fluxo com LangGraph somente após os componentes isolados estarem estáveis.
+
+## Fontes atuais
+
+- [Hero Siege — Ebontharn and Season 10](https://store.steampowered.com/news/app/269210/view/461208205952813643)
 
 ## Regra de coleta
 

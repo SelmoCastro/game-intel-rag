@@ -15,8 +15,9 @@ def test_document_requires_content():
         GameDocument(title="sem conteúdo", content="", source_url=URL, source_type="test")
 
 
-def test_document_defaults_to_hero_siege():
+def test_document_requires_explicit_game():
     document = GameDocument(
+        game="Hero Siege",
         title="Season 10",
         content="Ebontharn",
         source_url=URL,

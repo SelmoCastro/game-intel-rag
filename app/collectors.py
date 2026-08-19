@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import warnings
+from html import unescape
 
 import httpx
 from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
@@ -65,12 +66,17 @@ def collect_steam_news(
     if item is None:
         raise LookupError("A Season 10 não foi encontrada no feed da Steam")
 
-    title = item.title.get_text(" ", strip=True)
-    content = _clean_text(item.description.decode_contents())
+    title_node = item.find("title")
+    description_node = item.find("description")
+    if title_node is None or description_node is None:
+        raise ValueError("Item RSS sem título ou descrição")
+    title = title_node.get_text(" ", strip=True)
+    content = _clean_text(unescape(description_node.decode_contents()))
     if not content:
         raise ValueError("A notícia encontrada não possui descrição textual")
 
     return GameDocument(
+        game="Hero Siege",
         season="Season 10",
         category=_category_from_text(f"{title} {content}"),
         title=title,
